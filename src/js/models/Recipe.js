@@ -32,9 +32,70 @@ export default class Recipe {
     this.servings = 4;
   }
 
+  // Here we are trying to normalize data so its consistent throughout so we can use it elsewhere
   parseIngredients() {
-    const newIngredients = this.ingredients.map(ingredient => {
 
+    // the order of these two arrays is important
+    const unitsLong = ['tablespoons', 'tablespoon', 'ounces', 'ounce', 'teaspoons', 'teaspoon', 'cups', 'pounds'];
+    const unitsShort = ['tbsp', 'tbsp', 'oz', 'oz', 'tsp', 'tsp', 'cup', 'pound'];
+
+    const newIngredients = this.ingredients.map(element => {
+      // Standardize units
+      let ingredient = element.toLowerCase();
+      unitsLong.forEach((unit, index) => {
+        ingredient = ingredient.replace(unit, unitsShort[index]);
+      });
+
+      // Remove parenthesis
+      ingredient = ingredient.replace(/ *\([^)]*\) */g, " ");
+
+      // Parse ingredients into count, unit and ingredient
+
+      const arrIngr = ingredient.split(' ');
+
+      // findIndex - find which index contains the shortened unit (uses include to help find unit )
+      const unitIndex = arrIngr.findIndex(el => unitsShort.includes(el));
+
+      let objIngr;
+
+      if (unitIndex > -1) {
+        // Found a unit
+        // Ex 4 1/2 cups, arrCount  is [4, 1/2]
+        // Ex 4 cups, arrCount is [4]
+        const arrCount = arrIngr.slice(0, unitIndex);
+
+        let count;
+        if (arrCount.length === 1) {
+          count = eval(arrIngr[0].replace('-', '+'));
+        } else {
+          count = eval(arrIngr.slice(0, unitIndex).join('+'));
+        }
+
+        objIngr = {
+          count, // same as count: count - es6
+          unit: arrIngr[unitIndex],
+          ingredient : arrIngr.slice(unitIndex + 1).join(' ')
+        };
+
+      } else if (parseInt(arrIngr[0], 10)) {
+        // There is NO unit, but first element is a number
+        // eg 1 Tomato
+        objIngr = {
+          count: parseInt(arrIngr[0], 10),
+          unit: '',
+          ingredient: arrIngr.slice(1).join(' ') // slice from and including 2 element and join into a string
+          // with a space delimiter
+        };
+      } else if (unitIndex === -1) {
+        // Didnt find a unit and NO number in first position
+        objIngr = {
+          count: 1,
+          unit: '',
+          ingredient // same as ingredient: ingredient - es6
+        };
+      }
+
+      return objIngr; // in map you have to return
     });
 
     this.ingredients = newIngredients;
