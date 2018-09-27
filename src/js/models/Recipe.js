@@ -32,5 +32,13 @@ export default class Recipe {
     this.servings = 4;
   }
 
+  parseIngredients() {
+    const newIngredients = this.ingredients.map(ingredient => {
+
+    });
+
+    this.ingredients = newIngredients;
+  }
+
 
 }
