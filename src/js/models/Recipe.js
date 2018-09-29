@@ -38,6 +38,7 @@ export default class Recipe {
     // the order of these two arrays is important
     const unitsLong = ['tablespoons', 'tablespoon', 'ounces', 'ounce', 'teaspoons', 'teaspoon', 'cups', 'pounds'];
     const unitsShort = ['tbsp', 'tbsp', 'oz', 'oz', 'tsp', 'tsp', 'cup', 'pound'];
+    const units = [...unitsShort, 'kg', 'g'];
 
     const newIngredients = this.ingredients.map(element => {
       // Standardize units
@@ -54,7 +55,7 @@ export default class Recipe {
       const arrIngr = ingredient.split(' ');
 
       // findIndex - find which index contains the shortened unit (uses include to help find unit )
-      const unitIndex = arrIngr.findIndex(el => unitsShort.includes(el));
+      const unitIndex = arrIngr.findIndex(el => units.includes(el));
 
       let objIngr;
 
@@ -99,6 +100,18 @@ export default class Recipe {
     });
 
     this.ingredients = newIngredients;
+  }
+
+  updateServings(modify) {
+    //Servings
+    const newServings = modify === 'decrease' ? this.servings - 1 : this.servings + 1;
+
+    //Ingredients
+    this.ingredients.forEach(ingr => {
+      ingr.count = ingr.count * (newServings / this.servings);
+    });
+
+    this.servings = newServings;
   }
 
 

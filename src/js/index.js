@@ -1,6 +1,7 @@
 import Search from './models/Search';
 import Recipe from './models/Recipe'
 import * as searchView from './views/searchView';
+import * as recipeView from './views/recipeView';
 import { elements, renderLoader, clearLoader } from "./views/base";
 
 /* Here we are going to set a global state,
@@ -70,6 +71,11 @@ const controlRecipe = async () => {
 
   if (id) {
     // Prepare ui for changes
+    recipeView.clearRecipe();
+    renderLoader(elements.recipe);
+
+    // Highlight selected search item
+    if (state.search) searchView.highlightSelected(id);
 
     // create new recipe object
     state.recipe = new Recipe(id);
@@ -78,13 +84,18 @@ const controlRecipe = async () => {
       // get recipe data
       await state.recipe.getRecipe();
       state.recipe.parseIngredients();
+      console.log('HEELO', state.recipe);
 
       // calculate time and servings
       state.recipe.calcTime();
       state.recipe.calcServings();
 
+      console.log('HEELO ggg', state.recipe);
+
       // Render the recipe
-      console.log(state.recipe);
+      clearLoader();
+      recipeView.renderRecipe(state.recipe);
+
     } catch (error) {
       alert('Error occurred while processing recipe')
     }
@@ -97,3 +108,26 @@ const controlRecipe = async () => {
 
 // combining the above
 ['hashchange', 'load'].forEach(event => window.addEventListener(event, controlRecipe));
+
+
+// Handling the recipe button clicks, not on Dom when it loads so we have to use matches()
+elements.recipe.addEventListener('click', e => {
+  // we also tagetting any children of the match here
+  if (e.target.matches('.btn-decrease, .btn-decrease *')) {
+
+    if (state.recipe.servings > 1) {
+
+      // Do something when decrease button is clicked
+      state.recipe.updateServings('decrease');
+      recipeView.updateServingsIngredients(state.recipe);
+    }
+
+  } else if (e.target.matches('.btn-increase, .btn-increase *')) {
+
+    // Do something when increase button is clicked
+    state.recipe.updateServings('increase');
+    recipeView.updateServingsIngredients(state.recipe);
+  }
+
+  console.log(state.recipe);
+});
