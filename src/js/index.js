@@ -1,7 +1,9 @@
 import Search from './models/Search';
-import Recipe from './models/Recipe'
+import Recipe from './models/Recipe';
+import List from './models/List';
 import * as searchView from './views/searchView';
 import * as recipeView from './views/recipeView';
+import * as listView from './views/listView';
 import { elements, renderLoader, clearLoader } from "./views/base";
 
 /* Here we are going to set a global state,
@@ -110,9 +112,42 @@ const controlRecipe = async () => {
 ['hashchange', 'load'].forEach(event => window.addEventListener(event, controlRecipe));
 
 
+/* ----------------
+  LIST CONTROLLER
+  -----------------*/
+
+const controlList = () => {
+  // Create a new list if there is none yet
+  if (!state.list) state.list = new List();
+
+  // Add each ingredient to the list and user interface
+  state.recipe.ingredients.forEach(el => {
+    const item = state.list.addItem(el.count, el.unit, el.ingredient);
+    console.log(`list view ${item}`);
+    listView.renderItem(item);
+  });
+};
+
+// Handling delete and update list item events
+elements.shopping.addEventListener('click', event => {
+  const id = event.target.closest('.shopping__item').dataset.itemid;
+
+  // handling the delete operation
+  if (event.target.matches('.shopping__delete, .shopping__delete *')) {
+    //Delete from the state
+    state.list.deleteItem(id);
+
+    // Delete from user interface
+    listView.deleteItem(id);
+  } else if (e.target.matches('.shopping__count-value')) {
+    const val = parseFloat(e.target.value, 10);
+    state.list.updateCount(id, val);
+  }
+});
+
 // Handling the recipe button clicks, not on Dom when it loads so we have to use matches()
 elements.recipe.addEventListener('click', e => {
-  // we also tagetting any children of the match here
+  // we also targeting any children of the match here
   if (e.target.matches('.btn-decrease, .btn-decrease *')) {
 
     if (state.recipe.servings > 1) {
@@ -127,7 +162,11 @@ elements.recipe.addEventListener('click', e => {
     // Do something when increase button is clicked
     state.recipe.updateServings('increase');
     recipeView.updateServingsIngredients(state.recipe);
+  } else if (e.target.matches('.recipe__btn--add, .recipe__btn--add *')) {
+    controlList();
   }
 
   console.log(state.recipe);
 });
+
+
