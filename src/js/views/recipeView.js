@@ -1,3 +1,5 @@
+// To render view and some ui logic
+
 import Fraction from 'fraction.js';
 
 import { elements } from "./base";
@@ -97,12 +99,10 @@ export const renderRecipe = recipe => {
                 <use href="img/icons.svg#icon-triangle-right"></use>
             </svg>
         </a>
-    </div>
-      
+    </div>      
   `;
 
   elements.recipe.insertAdjacentHTML('afterbegin', markup);
-
 
 };
 

@@ -1,3 +1,5 @@
+// To render view and some ui logic
+
 import { elements } from "./base";
 
 export const renderItem = item => {

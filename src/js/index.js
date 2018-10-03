@@ -13,7 +13,9 @@ import '../css/styles.css';
   Search object
   Current recipe object
   Shopping list object
-  Liked recipe */
+  Liked recipe
+
+  The Controller sits between the View and Model, linking it all together, and takes care of user changes or manipulation.*/
 
 const state = {};
 
@@ -89,8 +91,6 @@ const controlRecipe = async () => {
       state.recipe.calcTime();
       state.recipe.calcServings();
 
-      // console.log('HEELO ggg', state.recipe);
-
       // Render the recipe
       clearLoader();
       recipeView.renderRecipe(
@@ -127,7 +127,6 @@ const controlList = () => {
   // Add each ingredient to the list and user interface
   state.recipe.ingredients.forEach(el => {
     const item = state.list.addItem(el.count, el.unit, el.ingredient);
-    console.log(`list view ${item}`);
     listView.renderItem(item);
   });
 };
