@@ -1,4 +1,4 @@
-import { Fraction } from 'fractional';
+import Fraction from 'fraction.js';
 
 import { elements } from "./base";
 
@@ -7,22 +7,12 @@ export const clearRecipe = () => {
 };
 
 const formatCount = count => {
-    if (count) {
-        // for example 2.5 = 2 1/2 or 0.5 = 1/2
-        const [integer, decimal] = count.toString().split('.').map(el => parseInt(el, 10));
-
-      if (!decimal) return count;
-
-      if (integer === 0) {
-        const fraction = new Fraction(count);
-        return `${fraction.numerator}/${fraction.denominator}`;
-      } else {
-        const fraction = new Fraction(count - integer);
-        return `${integer} ${fraction.numerator}/${fraction.denominator}`;
-      }
-    }
-
+  if (count) {
+    const num = new Fraction(count).simplify(0.00001);
+    return num.toFraction(true);
+  }
   return '?';
+
 };
 
 const createIngredient = ingredient => `
@@ -76,7 +66,7 @@ export const renderRecipe = recipe => {
                 </button>
             </div>
         </div>
-        <button class="recipe__love">
+        <button class="recipe__love" title="">
             <svg class="header__likes">
                 <use href="img/icons.svg#icon-heart-outlined"></use>
             </svg>
@@ -112,6 +102,8 @@ export const renderRecipe = recipe => {
   `;
 
   elements.recipe.insertAdjacentHTML('afterbegin', markup);
+
+
 };
 
 export const updateServingsIngredients = recipe => {

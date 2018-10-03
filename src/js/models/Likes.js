@@ -3,8 +3,8 @@ export default class Likes {
     this.likes = [];
   }
 
-  addLike(id, title, author, img) {
-    const like = { id, title, author, img };
+  addLike(id, title, author, img, isLiked) {
+    const like = { id, title, author, img, isLiked };
     this.likes.push(like);
 
     // Adding data in localStorage
@@ -37,7 +37,7 @@ export default class Likes {
   // reading from storage
   readStorage() {
     const storage = JSON.parse(localStorage.getItem('likes'));
-
+    console.log('Testing', storage);
     // Restoring likes from the localStorage
     if (storage) this.likes = storage;
   }

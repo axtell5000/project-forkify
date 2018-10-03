@@ -7,6 +7,7 @@ import * as recipeView from './views/recipeView';
 import * as listView from './views/listView';
 import * as likesView from './views/likesView';
 import { elements, renderLoader, clearLoader } from "./views/base";
+import '../css/styles.css';
 
 /* Here we are going to set a global state,
   Search object
@@ -14,9 +15,7 @@ import { elements, renderLoader, clearLoader } from "./views/base";
   Shopping list object
   Liked recipe */
 
-const state = {
-
-};
+const state = {};
 
 // SEARCH CONTROLLER
 // --------------------
@@ -48,7 +47,6 @@ const controlSearch = async () => {
 
   }
 
-
 };
 
 elements.searchForm.addEventListener('submit', e => {
@@ -62,7 +60,6 @@ elements.searchResPages.addEventListener('click', e => {
     const goToPage = parseInt(btn.dataset.goto, 10);
     searchView.clearResults();
     searchView.renderResult(state.search.results, goToPage);
-
   }
 });
 
@@ -71,7 +68,6 @@ elements.searchResPages.addEventListener('click', e => {
 
 const controlRecipe = async () => {
   const id = window.location.hash.replace('#', '');
-  console.log(id);
 
   if (id) {
     // Prepare ui for changes
@@ -88,13 +84,12 @@ const controlRecipe = async () => {
       // get recipe data
       await state.recipe.getRecipe();
       state.recipe.parseIngredients();
-      console.log('HEELO', state.recipe);
 
       // calculate time and servings
       state.recipe.calcTime();
       state.recipe.calcServings();
 
-      console.log('HEELO ggg', state.recipe);
+      // console.log('HEELO ggg', state.recipe);
 
       // Render the recipe
       clearLoader();
@@ -103,8 +98,12 @@ const controlRecipe = async () => {
         state.likes.isLiked(id)
       );
 
+      if (state.likes.isLiked(id)) {
+        likesView.toggleLikeBtn(true);
+      }
+
     } catch (error) {
-      alert('Error occurred while processing recipe')
+      alert('Error occurred while processing recipe');
     }
 
   }
@@ -161,11 +160,13 @@ const controlLike = () => {
   // User has NOT yet liked current recipe
   if (!state.likes.isLiked(currentID)) {
     // Add like to the state
+    const isLiked = true;
     const newLike = state.likes.addLike(
       currentID,
       state.recipe.title,
       state.recipe.author,
-      state.recipe.img
+      state.recipe.image,
+      isLiked
     );
     // Toggle the like button
     likesView.toggleLikeBtn(true);
@@ -226,7 +227,6 @@ elements.recipe.addEventListener('click', e => {
     controlLike();
   }
 
-  console.log(state.recipe);
 });
 
 
